@@ -1,11 +1,11 @@
 use clap::Parser;
 use colored::Colorize;
-use hyprkeymap::get_keybinds;
-mod args;
-mod hyprkeymap;
+use core::get_keybinds;
+mod cli;
+mod core;
 
 fn main() {
-    let args = args::Cli::parse();
+    let args = cli::Cli::parse();
 
     if args.verbose {
         for path in &args.paths {
@@ -14,7 +14,7 @@ fn main() {
     }
 
     match args.action {
-        args::Action::Layout(layout_args) => {
+        cli::Action::Layout(layout_args) => {
             if args.verbose {
                 println!("Displaying layer {}", layout_args.layer.bright_blue());
             }
@@ -42,7 +42,7 @@ fn main() {
                 }
             }
         }
-        args::Action::Check(check_args) => {
+        cli::Action::Check(check_args) => {
             if args.verbose {
                 println!("Checking key {}", check_args.key.bright_blue(),);
             }
