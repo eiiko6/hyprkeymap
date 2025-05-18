@@ -10,8 +10,18 @@ pub struct Keymap {
     pub comment: String,
 }
 
+#[derive(Clone)]
+pub enum Search {
+    All,
+    Key(String),
+}
+
 /// Get Keymap structs from paths
-pub fn get_keybinds(paths: Vec<String>, verbose: bool) -> std::io::Result<Vec<Keymap>> {
+pub fn get_keybinds(
+    paths: Vec<String>,
+    search: Search,
+    verbose: bool,
+) -> std::io::Result<Vec<Keymap>> {
     let mut keybinds = Vec::new();
 
     for path in paths {
@@ -24,7 +34,8 @@ pub fn get_keybinds(paths: Vec<String>, verbose: bool) -> std::io::Result<Vec<Ke
 
         for line in reader.lines() {
             let line = line?;
-            if let Some(keybind) = parse_keymap(line) {
+
+            if let Some(keybind) = parse_keymap(line, search.clone()) {
                 keybinds.push(keybind);
             }
         }
@@ -34,7 +45,7 @@ pub fn get_keybinds(paths: Vec<String>, verbose: bool) -> std::io::Result<Vec<Ke
 }
 
 /// Convert a string into a Keymap struct
-fn parse_keymap(line: String) -> Option<Keymap> {
+fn parse_keymap(line: String, search: Search) -> Option<Keymap> {
     // Filter binding lines
     let line = line.trim().strip_prefix("bind")?.split_once('=')?.1.trim();
 
@@ -53,6 +64,13 @@ fn parse_keymap(line: String) -> Option<Keymap> {
         Some((modifier, layer)) => (modifier.trim(), layer.to_lowercase()),
         None => (parts[0], "default".to_string()),
     };
+
+    // Skip if not the searched key
+    if let Search::Key(k) = search {
+        if parts[1].to_uppercase() != k.to_uppercase() {
+            return None;
+        }
+    }
 
     Some(Keymap {
         modifier: modifier.to_string(),

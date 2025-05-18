@@ -1,6 +1,6 @@
 use clap::Parser;
 use colored::Colorize;
-use core::get_keybinds;
+use core::{Search, display_keybind, display_layout, get_keybinds};
 mod cli;
 mod core;
 
@@ -19,7 +19,7 @@ fn main() {
                 println!("Displaying layer {}", layout_args.layer.bright_blue());
             }
 
-            let keybinds = match get_keybinds(args.paths, args.verbose) {
+            let keybinds = match get_keybinds(args.paths, Search::All, args.verbose) {
                 Ok(val) => val,
                 Err(e) => {
                     eprintln!("Failed to get keybinds from config files: {e}");
@@ -28,24 +28,24 @@ fn main() {
             };
 
             // Temporary alternative to an actual display
-            for keybind in keybinds.iter() {
-                if keybind.layer == layout_args.layer {
-                    println!(
-                        "-> {} {} {} {} {} {}",
-                        keybind.modifier.red(),
-                        keybind.layer.blue(),
-                        keybind.key.magenta(),
-                        keybind.action.yellow(),
-                        keybind.command,
-                        keybind.comment.bright_green()
-                    );
-                }
-            }
+            display_layout(keybinds, layout_args);
         }
         cli::Action::Check(check_args) => {
             if args.verbose {
                 println!("Checking key {}", check_args.key.bright_blue(),);
             }
+
+            let keybinds = match get_keybinds(args.paths, Search::Key(check_args.key), args.verbose)
+            {
+                Ok(val) => val,
+                Err(e) => {
+                    eprintln!("Failed to get keybinds from config files: {e}");
+                    return;
+                }
+            };
+
+            // Temporary alternative to an actual display
+            display_keybind(keybinds);
         }
     }
 }
