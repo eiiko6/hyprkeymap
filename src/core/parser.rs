@@ -62,7 +62,7 @@ fn parse_keymap(line: String, search: Search) -> Option<Keymap> {
 
     let (modifier, layer) = match parts[0].split_once(' ') {
         Some((modifier, layer)) => (modifier.trim(), layer.to_lowercase()),
-        None => (parts[0], "default".to_string()),
+        None => (parts[0], "base".to_string()),
     };
 
     // Skip if not the searched key
