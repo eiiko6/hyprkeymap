@@ -7,12 +7,6 @@ mod core;
 fn main() {
     let args = cli::Cli::parse();
 
-    if args.verbose {
-        for path in &args.paths {
-            println!("Using {}", path.bright_yellow());
-        }
-    }
-
     match args.action {
         cli::Action::Layout(layout_args) => {
             if args.verbose {
@@ -35,8 +29,11 @@ fn main() {
                 println!("Checking key {}", check_args.key.bright_blue(),);
             }
 
-            let keybinds = match get_keybinds(args.paths, Search::Key(check_args.key), args.verbose)
-            {
+            let keybinds = match get_keybinds(
+                args.paths,
+                Search::Key(check_args.key.clone()),
+                args.verbose,
+            ) {
                 Ok(val) => val,
                 Err(e) => {
                     eprintln!("Failed to get keybinds from config files: {e}");
@@ -45,7 +42,7 @@ fn main() {
             };
 
             // Temporary alternative to an actual display
-            display_keybind(keybinds);
+            display_keybind(keybinds, check_args);
         }
     }
 }

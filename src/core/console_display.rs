@@ -1,4 +1,4 @@
-use crate::cli::LayoutArgs;
+use crate::cli::{CheckArgs, LayoutArgs};
 use crate::core::parser::Keymap;
 use colored::Colorize;
 use std::collections::HashSet;
@@ -34,8 +34,8 @@ pub fn display_layout(keybinds: Vec<Keymap>, layout_args: LayoutArgs) {
         vec![
             "SHIFT", "Z", "X", "C", "V", "B", "N", "M", ",", ".", "/", "SHIFT",
         ],
-        vec!["CTRL", "ALT", "", "SPACE", "", "ALT", "CTRL"],
-        vec!["", "LEFT", "UP", "DOWN", "RIGHT"],
+        vec!["", "CTRL", "ALT", "", "SPACE", "", "ALT", "CTRL"],
+        vec!["", "", "", "LEFT", "UP", "DOWN", "RIGHT"],
     ];
 
     let used_keys: HashSet<String> = keybinds
@@ -59,16 +59,18 @@ pub fn display_layout(keybinds: Vec<Keymap>, layout_args: LayoutArgs) {
     }
 }
 
-pub fn display_keybind(keybinds: Vec<Keymap>) {
+pub fn display_keybind(keybinds: Vec<Keymap>, check_args: CheckArgs) {
     for keybind in keybinds.iter() {
-        println!(
-            "-> {} {} {} {} {} {}",
-            keybind.modifier.red(),
-            keybind.layer.blue(),
-            keybind.key.magenta(),
-            keybind.action.yellow(),
-            keybind.command,
-            keybind.comment.bright_green()
-        );
+        if keybind.layer == check_args.layer {
+            println!(
+                "-> {} {} {} {} {} {}",
+                keybind.modifier.red(),
+                keybind.layer.blue(),
+                keybind.key.magenta(),
+                keybind.action.yellow(),
+                keybind.command,
+                keybind.comment.bright_green()
+            );
+        }
     }
 }

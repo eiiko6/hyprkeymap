@@ -35,6 +35,7 @@ pub enum Action {
 #[derive(Args, Debug)]
 pub struct CheckArgs {
     pub key: String,
+    pub layer: String,
 }
 
 #[derive(Args, Debug)]

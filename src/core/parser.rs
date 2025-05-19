@@ -1,6 +1,8 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
+use colored::Colorize;
+
 pub struct Keymap {
     pub modifier: String,
     pub layer: String,
@@ -26,7 +28,7 @@ pub fn get_keybinds(
 
     for path in paths {
         if verbose {
-            println!("---|> Reading file {}", path);
+            println!("Using file: {}", path.bright_yellow());
         }
 
         let file = File::open(path)?;
